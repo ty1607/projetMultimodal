@@ -42,18 +42,17 @@ public class StoreGeste {
           .parse(in);
         List<Geste> gestes = new ArrayList<>();
         for (CSVRecord record : records) {
-            /*  0: id
-                1: Description
-                2: Start Date
-                3: Finnish Date
-                4: Theorical Date
-                5: Instance of Workflow attached
+            /*  0: points
+                1: name
             */            
             gestes.add(new Geste(StringtoArray(record.get(0)), record.get(1)));
         }
         return gestes;
     }
     
+    /*
+     * Store the gestes object in CSV File
+     */
     public void storeWorkflowCSV(List<Geste> gestes, String filePATH) throws IOException {
         try (
             BufferedWriter writer = Files.newBufferedWriter(Paths.get(filePATH));
