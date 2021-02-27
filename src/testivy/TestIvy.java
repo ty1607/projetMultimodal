@@ -79,7 +79,20 @@ public class TestIvy {
     
     class handleTimerTask extends TimerTask {
         public void run() {
-           System.out.println("Hello World!"); 
+           switch (state){
+               case IDLE : 
+                   //Interdit
+                   break;
+               case CREATE :
+                   //Creation de la forme reco avec les parametres obtenus ou defaut
+                   break;
+               case CREATE_CLICKED : 
+                   //On supprime la position releve avec le click
+                   break;
+               case CREATE_VOIX : 
+                   //On revient dans l'Etat CREATE et on annule la commande reconnu
+                   break;
+           }
         }
     }
     
