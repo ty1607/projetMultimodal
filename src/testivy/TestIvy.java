@@ -161,13 +161,20 @@ public class TestIvy {
                     //Interdit
                     break;
                 case CREATE : 
-                    //On fait rien
+                    //On releve la position et on change d'etat
+                    position.x = Integer.parseInt(arg1[0]);
+                    position.y = Integer.parseInt(arg1[1]);
+                    state = State.CREATE_CLICKED;
                     break;
                 case CREATE_CLICKED :
-                    //On fait rien
+                    //On remplace la position
+                    position.x = Integer.parseInt(arg1[0]);
+                    position.y = Integer.parseInt(arg1[1]);
                     break;
                 case CREATE_VOIX :
-                    //On fait rien
+                    //On traite le click.
+                    traiterClick();
+                    state = State.CREATE;
                     break; 
             }
         });
@@ -250,5 +257,13 @@ public class TestIvy {
             testIvy = new TestIvy();
             
             
+    }
+    
+    public void traiterClick(){
+        
+        
+        switch(commandeReconnu){
+            
+        }
     }
 }
