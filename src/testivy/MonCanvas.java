@@ -5,7 +5,6 @@
  */
 package testivy;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -34,31 +33,6 @@ public class MonCanvas extends JComponent implements ActionListener  {
     private enum State {
         APPRENTISSAGE,
         RECONNAISSANCE
-    }
-    
-    private class Geste {
-        List<Point2D.Double> points;
-        String nom;
-        public Geste(List<Point2D.Double> points, String nom) {
-            this.points = points;
-            this.nom = nom;
-        }
-
-        public List<Point2D.Double> getPoints() {
-            return points;
-        }
-
-        public String getNom() {
-            return nom;
-        }
-
-        public void setPoints(List<Point2D.Double> points) {
-            this.points = points;
-        }
-
-        public void setNom(String nom) {
-            this.nom = nom;
-        }  
     }
     
     State state;

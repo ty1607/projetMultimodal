@@ -1,0 +1,78 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.bergerLevrault.csvtoxes;
+
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVRecord;
+
+/**
+ *
+ * @author Thomas.WASHBROOK
+ */
+public class CSV_Parser {
+    
+    /**
+     *
+     */
+    public CSV_Parser () {}
+    
+    public List<InstanceWorkflow> readWorkflowCSV(String filePATH)
+            throws IOException {
+        Reader in = new FileReader(filePATH);
+        Iterable<CSVRecord> records = CSVFormat.EXCEL
+          .withDelimiter(';')
+          .withFirstRecordAsHeader()
+          .parse(in);
+        List<InstanceWorkflow> instances = new ArrayList<>();
+        for (CSVRecord record : records) {
+            /*  0: id
+                1: Description
+                2: Start Date
+                3: Finnish Date
+                4: Theorical Date
+                5: Instance of Workflow attached
+            */            
+            instances.add(new InstanceWorkflow(record.get(0), record.get(1),
+                    record.get(2), record.get(4), record.get(3), record.get(5)
+            ));
+        }
+        return instances;
+    }
+    
+    public List<InstanceStep> readStepCSV(String filePATH) throws IOException {
+        Reader in = new FileReader(filePATH);
+        Iterable<CSVRecord> records = CSVFormat.EXCEL
+          .withDelimiter(';')
+          .parse(in);
+        List<InstanceStep> instances = new ArrayList<>();
+        for (CSVRecord record : records) {
+            InstanceStep newInstance = new InstanceStep(record.get(0),
+                    record.get(1), record.get(5), record.get(9), record.get(11),
+                    record.get(31), record.get(16), record.get(17),
+                    record.get(20));
+            instances.add(newInstance);
+        }
+        return instances;
+    }
+    
+    public List<NameWorkflow> parseNameWorkflowCSV(String filePATH)
+            throws IOException {
+        Reader in = new FileReader(filePATH);
+        Iterable<CSVRecord> records = CSVFormat.EXCEL
+          .withDelimiter(';')
+          .parse(in);
+        List<NameWorkflow> data = new ArrayList<>();
+        for (CSVRecord record : records) {
+            data.add(new NameWorkflow(record.get(0), record.get(1)));
+        }
+        return data;
+    }
+}

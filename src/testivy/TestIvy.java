@@ -8,8 +8,15 @@ package testivy;
 import fr.dgac.ivy.Ivy;
 import fr.dgac.ivy.IvyClient;
 import fr.dgac.ivy.IvyException;
+import java.awt.geom.Point2D;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -100,11 +107,32 @@ public class TestIvy {
     /**
      * Intialise les differents variables et elements du code.
      */
-    private void init(){
+    private void init() {
         state = State.IDLE;
         commandeReconnu = VoiceRecog.NOTHING;
         timer = new Timer();
         
+        // =================
+        // Test Store & Read
+        // =================
+        StoreGeste sg = new StoreGeste();
+        List<Geste> gestes = new ArrayList<>();
+        List<Point2D.Double> points = new ArrayList<>();
+        for (int i = 0 ; i < 10 ; i++)
+            points.add(new Point2D.Double(i, i));
+        
+        gestes.add(new Geste(points, "ligne droite"));
+        try {
+            sg.storeWorkflowCSV(gestes, "./test.csv");
+        } catch (IOException ex) {
+            Logger.getLogger(TestIvy.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        try {
+            gestes = sg.readGestesCSV("./test.csv");
+        } catch (IOException ex) {
+            Logger.getLogger(TestIvy.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        System.out.println(Arrays.toString(gestes.toArray()));
     }
     
     /**
@@ -114,6 +142,7 @@ public class TestIvy {
     public static void main(String[] args) throws IvyException {
             TestIvy testIvy;
             testIvy = new TestIvy();
+            
             
     }
 }
