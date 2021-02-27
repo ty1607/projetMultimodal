@@ -93,9 +93,11 @@ public class MonCanvas extends JComponent implements ActionListener  {
         points.forEach(point -> {
             g2.drawOval((int) point.getX(), (int) point.getY(), 2, 2);
         });
-        normPoint.forEach(point -> {
+        if (normPoint != null){
+            normPoint.forEach(point -> {
             g2.drawOval((int) point.getX(), (int) point.getY(), 2, 2);
         });
+        }
     }
     
     public void openFrame() {
@@ -146,15 +148,20 @@ public class MonCanvas extends JComponent implements ActionListener  {
     private Geste recoGeste(List<Point2D.Double> points) {
         double somme = 0;
         List<Double> listeScore = new ArrayList<>();
-        for (Point2D.Double point : points) {
-            for (Geste geste : gestes) {
-                for (Point2D.Double pointBase : geste.points) {
-                    somme += Math.sqrt((pointBase.x - point.x)*(pointBase.x - point.x) + (pointBase.y - point.y)*(pointBase.y - point.y));
-                }
-                somme = points.size() > geste.points.size() ? somme/ geste.points.size() : points.size();
-                somme = 1 - (somme/0.5*Math.sqrt(points.size()*points.size() + geste.points.size()*geste.points.size()));
-                listeScore.add(somme);
+       
+        
+        for (Geste geste : gestes){
+            somme = 0;
+            for (int i = 0; i < points.size(); i++){
+                double x = points.get(i).x;
+                double y = points.get(i).y;
+                double gX = geste.points.get(i).x;
+                double gY = geste.points.get(i).y;
+                somme += Math.sqrt((x - gX)*(x - gX) + (y - gY)*(y - gY));
             }
+            somme =  somme/ points.size();
+            somme = 1 - (somme/(0.5*Math.sqrt(points.size()*points.size() + geste.points.size()*geste.points.size())));
+            listeScore.add(somme);
         }
         Double best_score = 0.0;
         Geste bestScore = null; 
