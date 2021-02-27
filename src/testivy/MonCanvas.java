@@ -119,7 +119,7 @@ public class MonCanvas extends JComponent implements ActionListener  {
         gestes.add(new Geste(this.normPoint,"Geste" + i));
     }
     
-    private Geste recoGeste(List<Point2D.Double> points) {
+    public Geste recoGeste(List<Point2D.Double> points) {
         double somme = 0;
         List<Double> listeScore = new ArrayList<>();
        
@@ -148,4 +148,10 @@ public class MonCanvas extends JComponent implements ActionListener  {
         System.out.println("Gest reconnu = " + bestScore.nom + " + score " + best_score.toString());
         return bestScore;
     }
+
+    public void setGestes(List<Geste> gestes) {
+        this.gestes = gestes;
+    }
+    
+    
 }
