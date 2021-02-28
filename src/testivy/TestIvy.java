@@ -170,10 +170,11 @@ public class TestIvy {
                     break;
                 case CREATE : 
                     //On releve la position et on change d'etat
-                    //timer.cancel();
                     tempPos.x = Integer.parseInt(arg1[0]);
                     tempPos.y = Integer.parseInt(arg1[1]);
                     state = State.CREATE_CLICKED;
+                    timer.cancel();
+                    timer = new Timer();
                     timer.schedule(new HandleTimerTask(), 6000);
                     break;
                 case CREATE_CLICKED :
@@ -181,6 +182,8 @@ public class TestIvy {
                     //timer.cancel();
                     tempPos.x = Integer.parseInt(arg1[0]);
                     tempPos.y = Integer.parseInt(arg1[1]);
+                    timer.cancel();
+                    timer = new Timer();
                     timer.schedule(new HandleTimerTask(), 6000);
                     break;
                 case CREATE_VOIX :
@@ -195,8 +198,10 @@ public class TestIvy {
                         Logger.getLogger(TestIvy.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 
-                    commandeReconnu = VoiceRecog.NOTHING;
-                    state = State.CREATE;
+                    //commandeReconnu = VoiceRecog.NOTHING;
+                    //state = State.CREATE;
+                    timer.cancel();
+                    timer = new Timer();
                     timer.schedule(new HandleTimerTask(), 6000);
                     break; 
  
@@ -218,7 +223,7 @@ public class TestIvy {
                     break;
                 case CREATE_VOIX :
                     //On traite le click.
-                    nomObjetTest = arg1[3];
+                    nomObjetTest = arg1[2];
                     break; 
             }
         });
@@ -253,8 +258,8 @@ public class TestIvy {
                     break; 
             }
         });
-        bus.bindMsg("^Palette:Info nom=(.*) x=(.*) y=(.*) longeur=(.*)"
-                + " hauteur=(.*) couleurFond=(.*) couleurContour=(.*)", (IvyClient arg0, String[] arg1) -> {
+        //'Palette:Info nom=R13 x=459 y=633 longueur=100 hauteur=50 couleurFond=green couleurContour=black'
+        bus.bindMsg("^Palette:Info nom=(.*) x=(.*) y=(.*) longeur=(.*) hauteur=(.*) couleurFond=(.*) couleurContour=(.*)", (IvyClient arg0, String[] arg1) -> {
             switch (state){
                 case IDLE :
                     //Interdit
@@ -276,6 +281,8 @@ public class TestIvy {
                         //timer.cancel();
                     } else {
                         //timer.cancel();
+                        timer.cancel();
+                        timer = new Timer();
                         timer.schedule(new HandleTimerTask(), 6000);
                         state = State.CREATE;
                     }
@@ -295,6 +302,8 @@ public class TestIvy {
                             commandeReconnu = VoiceRecog.POSITION;
                             state = State.CREATE_VOIX;
                             //timer.cancel();
+                            timer.cancel();
+                            timer = new Timer();
                             timer.schedule(new HandleTimerTask(), 6000);
                             break;
                         case "couleur":
@@ -303,6 +312,8 @@ public class TestIvy {
                             state = State.CREATE_VOIX;
                             
                             //timer.cancel();
+                            timer.cancel();
+                            timer = new Timer();
                             timer.schedule(new HandleTimerTask(), 6000);
                             break;
                         case "rouge":
@@ -338,6 +349,8 @@ public class TestIvy {
                                 createShape();
                                 state = State.IDLE;
                             } else {
+                                timer.cancel();
+                                timer = new Timer();
                                 timer.schedule(new HandleTimerTask(), 6000);
                                 state = State.CREATE;
                             }
@@ -346,7 +359,7 @@ public class TestIvy {
                             commandeReconnu = VoiceRecog.COLOR;
                 
                             try {
-                                bus.sendMsg("Palette:TesterPoint x=" + tempPos.x + "y=" + tempPos.y);
+                                bus.sendMsg("Palette:TesterPoint x=" + tempPos.x + " y=" + tempPos.y);
                             } catch (IvyException ex) {
                                 Logger.getLogger(TestIvy.class.getName()).log(Level.SEVERE, null, ex);
                             }
@@ -365,11 +378,15 @@ public class TestIvy {
                         case "ici" :
                             commandeReconnu = VoiceRecog.POSITION;
                             //timer.cancel();
+                            timer.cancel();
+                            timer = new Timer();
                             timer.schedule(new HandleTimerTask(), 6000);
                             break;
                         case "element" :
                             commandeReconnu = VoiceRecog.COLOR;
                             //timer.cancel();
+                            timer.cancel();
+                            timer = new Timer();
                             timer.schedule(new HandleTimerTask(), 6000);
                             break;
                         default :
@@ -400,14 +417,18 @@ public class TestIvy {
                    tempPos = new Point(0,0);
                    //timer.cancel();
                    state = State.CREATE;
-                   timer.schedule(new HandleTimerTask(), 6000);
+                   timer.cancel();
+                    timer = new Timer();
+                    timer.schedule(new HandleTimerTask(), 6000);
                    break;
                case CREATE_VOIX : 
                    //On revient dans l'Etat CREATE et on annule la commande reconnu
                    //timer.cancel();
                    state = State.CREATE;
                    commandeReconnu = VoiceRecog.NOTHING;
-                   timer.schedule(new HandleTimerTask(), 6000);
+                   timer.cancel();
+                    timer = new Timer();
+                    timer.schedule(new HandleTimerTask(), 6000);
                    break;
            }
         }
@@ -457,10 +478,13 @@ public class TestIvy {
         
         switch(commandeReconnu){
             case COLOR:
-                bus.sendMsg("Palette:TesterPoint x=" + tempPos.x + "y=" + tempPos.y);
+                bus.sendMsg("Palette:TesterPoint x=" + tempPos.x + " y=" + tempPos.y);
+                
                 break;
             case POSITION :
                 position = tempPos;
+                commandeReconnu = VoiceRecog.NOTHING;
+                state= State.CREATE;
                 break;
             case NOTHING : 
                 break;
@@ -477,7 +501,16 @@ public class TestIvy {
             if (couleur == "" || couleur == null){
                 couleur = "RED";
             }
-            bus.sendMsg("Palette:CreerRectangle x=" + position.x + " y=" + position.y + " couleurFond=" + couleur);
+            
+            switch (forme){
+                case "Rectangle":
+                    bus.sendMsg("Palette:CreerRectangle x=" + position.x + " y=" + position.y + " couleurFond=" + couleur);
+                    break;
+                case "Ellipse":
+                    bus.sendMsg("Palette:CreerEllipse x=" + position.x + " y=" + position.y + " couleurFond=" + couleur);
+                    break;
+            }
+            
         } catch (IvyException ex) {
             Logger.getLogger(TestIvy.class.getName()).log(Level.SEVERE, null, ex);
         }
