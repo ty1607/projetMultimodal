@@ -451,7 +451,7 @@ public class TestIvy {
                 position.setLocation(0, 0);
             }
             if (couleur == "" || couleur == null){
-                couleur = Color.RED.toString();
+                couleur = "RED";
             }
             bus.sendMsg("Palette:CreerRectangle x=" + position.x + " y=" + position.y + " couleurFond=" + couleur);
         } catch (IvyException ex) {
