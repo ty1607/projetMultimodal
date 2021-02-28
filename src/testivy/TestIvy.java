@@ -189,6 +189,7 @@ public class TestIvy {
                         Logger.getLogger(TestIvy.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 
+                    commandeReconnu = VoiceRecog.NOTHING;
                     state = State.CREATE;
                     timer.schedule(new HandleTimerTask(), 6000);
                     break; 
