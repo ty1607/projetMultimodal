@@ -145,7 +145,7 @@ public class MonCanvas extends JComponent implements ActionListener  {
                bestScore = gestes.get(listeScore.indexOf(val));
            }
         }
-        System.out.println("Gest reconnu = " + bestScore.nom + " + score " + best_score.toString());
+        //System.out.println("Gest reconnu = " + bestScore.nom + " + score " + best_score.toString());
         return bestScore;
     }
 

@@ -33,32 +33,32 @@
             <tag>out="element";</tag>
         </item>
         <item>
-          <ruleref uri="#rouge"/>
-          <tag>out="rouge";</tag>
+          <ruleref uri="#RED"/>
+          <tag>out="RED";</tag>
         </item>
         <item>
           <ruleref uri="#vert"/>
-          <tag>out="vert";</tag>
+          <tag>out="GREEN";</tag>
         </item>
         <item>
           <ruleref uri="#bleu"/>
-          <tag>out="bleu";</tag>
+          <tag>out="BLUE";</tag>
         </item>
         <item>
           <ruleref uri="#jaune"/>
-          <tag>out="element";</tag>
+          <tag>out="YELLOW";</tag>
         </item>
         <item>
           <ruleref uri="#noir"/>
-          <tag>out="noir";</tag>
+          <tag>out="BLACK";</tag>
         </item>
         <item>
           <ruleref uri="#orange"/>
-          <tag>out="orange";</tag>
+          <tag>out="ORANGE";</tag>
         </item>
         <item>
           <ruleref uri="#violet"/>
-          <tag>out="violet";</tag>
+          <tag>out="PURPLE";</tag>
         </item>
         <item>
           <ruleref uri="#couleur"/>
@@ -99,7 +99,7 @@
       <item>ce</item>
     </one-of>
   </rule>
-  <rule id="rouge">
+  <rule id="RED">
     <one-of>
       <item>rouge</item>
       <item>red</item>

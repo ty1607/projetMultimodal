@@ -129,7 +129,8 @@ public class TestIvy {
                     //sg.addGestetoCSV(new Geste(stroke.getPoints(), "Deplacer"), FILE);
                     
                    Geste reco = canvas.recoGeste(stroke.getPoints());
-                    switch (reco.getNom()){
+                    if (reco != null){
+                        switch (reco.getNom()){
                         case "Rectangle" :
                             //Set la forme a creer en tant que rectangle et changer d'etat
                             forme = "Rectangle";
@@ -144,7 +145,9 @@ public class TestIvy {
                             break;
                         default :
                             break;
-                    }
+                        }
+                    } else 
+                        System.out.println("Geste non reconnu");
                     break;
 
                 case CREATE : 
@@ -167,7 +170,7 @@ public class TestIvy {
                     break;
                 case CREATE : 
                     //On releve la position et on change d'etat
-                    timer.cancel();
+                    //timer.cancel();
                     tempPos.x = Integer.parseInt(arg1[0]);
                     tempPos.y = Integer.parseInt(arg1[1]);
                     state = State.CREATE_CLICKED;
@@ -175,14 +178,14 @@ public class TestIvy {
                     break;
                 case CREATE_CLICKED :
                     //On remplace la position
-                    timer.cancel();
+                    //timer.cancel();
                     tempPos.x = Integer.parseInt(arg1[0]);
                     tempPos.y = Integer.parseInt(arg1[1]);
                     timer.schedule(new HandleTimerTask(), 6000);
                     break;
                 case CREATE_VOIX :
                     //On traite le click.
-                    timer.cancel();
+                    //timer.cancel();
                     tempPos.x = Integer.parseInt(arg1[0]);
                     tempPos.y = Integer.parseInt(arg1[1]);
                 
@@ -270,9 +273,9 @@ public class TestIvy {
                     if (position != null && (couleur != null && !couleur.isEmpty())){
                         createShape();
                         state = State.IDLE;
-                        timer.cancel();
+                        //timer.cancel();
                     } else {
-                        timer.cancel();
+                        //timer.cancel();
                         timer.schedule(new HandleTimerTask(), 6000);
                         state = State.CREATE;
                     }
@@ -291,14 +294,34 @@ public class TestIvy {
                         case "ici" :
                             commandeReconnu = VoiceRecog.POSITION;
                             state = State.CREATE_VOIX;
-                            timer.cancel();
+                            //timer.cancel();
                             timer.schedule(new HandleTimerTask(), 6000);
                             break;
+                        case "couleur":
                         case "element" :
                             commandeReconnu = VoiceRecog.COLOR;
                             state = State.CREATE_VOIX;
-                            timer.cancel();
+                            
+                            //timer.cancel();
                             timer.schedule(new HandleTimerTask(), 6000);
+                            break;
+                        case "rouge":
+                            couleur = "RED";
+                            break;
+                        case "violet":
+                            couleur = "PURPLE";
+                            break;
+                        case "vert":
+                            couleur = "GREEN";
+                            break;
+                        case "bleu":
+                            couleur = "BLUE";
+                            break;
+                        case "noir":
+                            couleur = "BLACK";
+                            break;
+                        case "jaune":
+                            couleur = "YELLOW";
                             break;
                         default :
                              break;
@@ -309,7 +332,7 @@ public class TestIvy {
                     switch (arg1[0]) {
                         case "ici" :
                             position = tempPos;
-                            timer.cancel();
+                            //timer.cancel();
                             state = State.CREATE;
                             if (couleur != null && !couleur.isEmpty()){
                                 createShape();
@@ -328,7 +351,7 @@ public class TestIvy {
                                 Logger.getLogger(TestIvy.class.getName()).log(Level.SEVERE, null, ex);
                             }
                 
-                            timer.cancel();
+                            //timer.cancel();
                             timer.schedule(new HandleTimerTask(), 6000);
                             break;
 
@@ -341,12 +364,12 @@ public class TestIvy {
                     switch (arg1[0]) {
                         case "ici" :
                             commandeReconnu = VoiceRecog.POSITION;
-                            timer.cancel();
+                            //timer.cancel();
                             timer.schedule(new HandleTimerTask(), 6000);
                             break;
                         case "element" :
                             commandeReconnu = VoiceRecog.COLOR;
-                            timer.cancel();
+                            //timer.cancel();
                             timer.schedule(new HandleTimerTask(), 6000);
                             break;
                         default :
@@ -374,14 +397,14 @@ public class TestIvy {
 
                case CREATE_CLICKED : 
                    //On supprime la position releve avec le click
-                   tempPos = null;
-                   timer.cancel();
+                   tempPos = new Point(0,0);
+                   //timer.cancel();
                    state = State.CREATE;
                    timer.schedule(new HandleTimerTask(), 6000);
                    break;
                case CREATE_VOIX : 
                    //On revient dans l'Etat CREATE et on annule la commande reconnu
-                   timer.cancel();
+                   //timer.cancel();
                    state = State.CREATE;
                    commandeReconnu = VoiceRecog.NOTHING;
                    timer.schedule(new HandleTimerTask(), 6000);
@@ -400,6 +423,7 @@ public class TestIvy {
         timer = new Timer();
         //On met la couleur et la position par defaut.
         position = new Point(0, 0);
+        tempPos = new Point(0, 0);
         // =================
         // Test Store & Read
         // =================
