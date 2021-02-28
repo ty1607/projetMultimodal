@@ -258,8 +258,10 @@ public class TestIvy {
                     break; 
             }
         });
-        //'Palette:Info nom=R13 x=459 y=633 longueur=100 hauteur=50 couleurFond=green couleurContour=black'
-        bus.bindMsg("^Palette:Info nom=(.*) x=(.*) y=(.*) longeur=(.*) hauteur=(.*) couleurFond=(.*) couleurContour=(.*)", (IvyClient arg0, String[] arg1) -> {
+        
+        //Je comprends pas pourquoi il ne capte pas ce message.
+        //           'Palette:Info nom=R13 x=459 y=633 longueur=100 hauteur=50 couleurFond=green couleurContour=black'
+        bus.bindMsg("^Palette:Info nom=(.*) x=(.*) y=(.*) longueur=(.*) hauteur=(.*) couleurFond=(.*) couleurContour=(.*)", (IvyClient arg0, String[] arg1) -> {
             switch (state){
                 case IDLE :
                     //Interdit
