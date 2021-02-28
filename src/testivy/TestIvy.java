@@ -288,13 +288,13 @@ public class TestIvy {
                 case CREATE : 
                     //Interdit
                     switch (arg1[0]) {
-                        case "HERE" :
+                        case "ici" :
                             commandeReconnu = VoiceRecog.POSITION;
                             state = State.CREATE_VOIX;
                             timer.cancel();
                             timer.schedule(new HandleTimerTask(), 6000);
                             break;
-                        case "COLOR" :
+                        case "element" :
                             commandeReconnu = VoiceRecog.COLOR;
                             state = State.CREATE_VOIX;
                             timer.cancel();
@@ -307,7 +307,7 @@ public class TestIvy {
                 case CREATE_CLICKED :
                     //Interdit
                     switch (arg1[0]) {
-                        case "HERE" :
+                        case "ici" :
                             position = tempPos;
                             timer.cancel();
                             state = State.CREATE;
@@ -319,7 +319,7 @@ public class TestIvy {
                                 state = State.CREATE;
                             }
                             break;
-                        case "COLOR" :
+                        case "element" :
                             commandeReconnu = VoiceRecog.COLOR;
                 
                             try {
@@ -339,12 +339,12 @@ public class TestIvy {
                 case CREATE_VOIX :
                     //On traite le click.
                     switch (arg1[0]) {
-                        case "HERE" :
+                        case "ici" :
                             commandeReconnu = VoiceRecog.POSITION;
                             timer.cancel();
                             timer.schedule(new HandleTimerTask(), 6000);
                             break;
-                        case "COLOR" :
+                        case "element" :
                             commandeReconnu = VoiceRecog.COLOR;
                             timer.cancel();
                             timer.schedule(new HandleTimerTask(), 6000);
