@@ -7,6 +7,7 @@ package testivy;
 
 import java.awt.geom.Point2D;
 import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -33,27 +34,37 @@ public class StoreGeste {
     /*
      * Read CSV file format in EXCEL style with ';' separator
      */
-    public List<Geste> readGestesCSV(String filePATH)
-            throws IOException {
-        Reader in = new FileReader(filePATH);
-        Iterable<CSVRecord> records = CSVFormat.EXCEL
+    public List<Geste> readGestesCSV(String filePATH) {
+        Reader in;
+        List<Geste> gestes = null;
+        try {
+            in = new FileReader(filePATH);
+            Iterable<CSVRecord> records = CSVFormat.EXCEL
           .withDelimiter(';')
           .withFirstRecordAsHeader()
           .parse(in);
-        List<Geste> gestes = new ArrayList<>();
+        gestes = new ArrayList<>();
         for (CSVRecord record : records) {
             /*  0: points
                 1: name
             */
             gestes.add(new Geste(StringtoArray(record.get(1)), record.get(0)));
         }
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(StoreGeste.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.println("FILE NOT FOUND");
+        } catch (IOException ex) {
+            Logger.getLogger(StoreGeste.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.println("CANNOT READ FILE");
+        }
+        
         return gestes;
     }
     
     /*
      * Store the gestes object in CSV File
      */
-    public void storeWorkflowCSV(List<Geste> gestes, String filePATH) throws IOException {
+    public void storeWorkflowCSV(List<Geste> gestes, String filePATH) {
         try (
             BufferedWriter writer = Files.newBufferedWriter(Paths.get(filePATH));
 
@@ -70,20 +81,26 @@ public class StoreGeste {
             });
 
             csvPrinter.flush();
+        } catch (IOException ex) {
+            Logger.getLogger(StoreGeste.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
+    public void addGestetoCSV(Geste geste, String path) {
+        List<Geste> gestes;
+        gestes = readGestesCSV(path);
+        gestes.add(geste);
+        storeWorkflowCSV(gestes, path);
+    }
+    
     private List<Point2D.Double> StringtoArray(String arr) {
+        System.out.println("arr" + arr);
         String[] items = arr.replaceAll("\\[", "").replaceAll("\\]", "").
                 replaceAll("Point2D.Double", "").replaceAll("\\s", "").split(",");
-        
-        for (String item : items) {
-            System.out.println("items " + item);
-        }
 
         List<Point2D.Double> data = new ArrayList<>();
 
-        for (int i = 0; i < items.length-1; i++) {
+        for (int i = 0; i < items.length-1; i = i + 2) {
             try {
                 data.add(new Point2D.Double(
                         Double.parseDouble(items[i]),

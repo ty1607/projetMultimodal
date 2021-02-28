@@ -316,10 +316,10 @@ public class TestIvy {
         timer = new Timer();
         //On met la couleur et la position par defaut.
         position = new Point(0, 0);
-        
         // =================
         // Test Store & Read
         // =================
+        final String FILE = "./test.csv";
         sg = new StoreGeste();
         gestes = new ArrayList<>();
         List<Point2D.Double> points = new ArrayList<>();
@@ -327,18 +327,10 @@ public class TestIvy {
             points.add(new Point2D.Double(i, i));
         
         gestes.add(new Geste(points, "ligne droite"));
-        try {
-            sg.storeWorkflowCSV(gestes, "./test.csv");
-        } catch (IOException ex) {
-            Logger.getLogger(TestIvy.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        try {
-            gestes = sg.readGestesCSV("./test.csv");
-            
-        } catch (IOException ex) {
-            Logger.getLogger(TestIvy.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        sg.storeWorkflowCSV(gestes, FILE);
+        gestes = sg.readGestesCSV(FILE);
         System.out.println(Arrays.toString(gestes.toArray()));
+        sg.addGestetoCSV(new Geste(points, "ligne droite2"), FILE);
     }
     
     /**
