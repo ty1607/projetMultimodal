@@ -44,8 +44,8 @@ public class StoreGeste {
         for (CSVRecord record : records) {
             /*  0: points
                 1: name
-            */            
-            gestes.add(new Geste(StringtoArray(record.get(0)), record.get(1)));
+            */
+            gestes.add(new Geste(StringtoArray(record.get(1)), record.get(0)));
         }
         return gestes;
     }
@@ -76,10 +76,14 @@ public class StoreGeste {
     private List<Point2D.Double> StringtoArray(String arr) {
         String[] items = arr.replaceAll("\\[", "").replaceAll("\\]", "").
                 replaceAll("Point2D.Double", "").replaceAll("\\s", "").split(",");
+        
+        for (String item : items) {
+            System.out.println("items " + item);
+        }
 
         List<Point2D.Double> data = new ArrayList<>();
 
-        for (int i = 0; i < items.length; i++) {
+        for (int i = 0; i < items.length-1; i++) {
             try {
                 data.add(new Point2D.Double(
                         Double.parseDouble(items[i]),
