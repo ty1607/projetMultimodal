@@ -26,38 +26,41 @@ import java.util.logging.Logger;
  * @author Thomas
  */
 public class TestIvy {
-        Ivy bus;
-        Stroke stroke;
-        final String FILE = "./test.csv";
-        
-        private enum State {
-            IDLE,
-            CREATE,
-            CREATE_CLICKED, 
-            CREATE_VOIX
-        }
-        private State state;
-        
-        
-        //Cette enumeration va servir pour dire a l'application quel traitement prendre quand il recoit un 
-        //click apres avoir reco une commande vocale.
-        private enum VoiceRecog {
-            COLOR,
-            POSITION,
-            NOTHING
-        } 
-        private VoiceRecog commandeReconnu;
-        
-        private String forme;
-        
-        
-        private Timer timer;
-        Point position;
-        Point tempPos;
-        String couleur;
-        
-        List<Geste> gestes; 
-        StoreGeste sg;
+    Ivy bus;
+    Stroke stroke;
+    final String FILE = "./test.csv";
+
+    private enum State {
+        IDLE,
+        CREATE,
+        CREATE_CLICKED, 
+        CREATE_VOIX,
+        DELETE,
+        DELETE_CLICKED,
+        DELETE_VOIX
+    }
+    private State state;
+
+
+    //Cette enumeration va servir pour dire a l'application quel traitement prendre quand il recoit un 
+    //click apres avoir reco une commande vocale.
+    private enum VoiceRecog {
+        COLOR,
+        POSITION,
+        NOTHING
+    } 
+    private VoiceRecog commandeReconnu;
+
+    private String forme;
+
+
+    private Timer timer;
+    Point position;
+    Point tempPos;
+    String couleur;
+
+    List<Geste> gestes; 
+    StoreGeste sg;
         
     String nomObjetTest;
     public TestIvy() throws IvyException {
@@ -122,7 +125,7 @@ public class TestIvy {
             canvas.repaint();
             switch (state){
                 case IDLE :
-                    //continue le dessin de forme
+                    //termine le dessin de forme
                      stroke.addPoint(Integer.parseInt(arg1[0]), Integer.parseInt(arg1[1]));
                     stroke.normalize();
                     canvas.setNormPoints(stroke.getPoints());
@@ -141,6 +144,11 @@ public class TestIvy {
                             //Set la forme a creer en tant que ellipse et changer d'etat
                             forme = "Ellipse";
                             this.state = State.CREATE;
+                            timer.schedule(new HandleTimerTask(), 6000);
+                            break;
+                        case "Supprimer" :
+                            state = State.DELETE;
+                            timer = new Timer();
                             timer.schedule(new HandleTimerTask(), 6000);
                             break;
                         default :
@@ -204,6 +212,41 @@ public class TestIvy {
                     timer = new Timer();
                     timer.schedule(new HandleTimerTask(), 6000);
                     break; 
+                case DELETE : 
+                    state = State.DELETE_CLICKED;
+                    tempPos.x = Integer.parseInt(arg1[0]);
+                    tempPos.y = Integer.parseInt(arg1[1]);
+                    try {
+                        traiterClickDelete();
+                    } catch (IvyException ex) {
+                        Logger.getLogger(TestIvy.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                
+                    timer.cancel();
+                    timer = new Timer();
+                    timer.schedule(new HandleTimerTask(), 6000);
+                    break; 
+                case DELETE_CLICKED :
+                    tempPos.x = Integer.parseInt(arg1[0]);
+                    tempPos.y = Integer.parseInt(arg1[1]);
+                    timer.cancel();
+                    timer = new Timer();
+                    timer.schedule(new HandleTimerTask(), 6000);
+                    break; 
+                case DELETE_VOIX : 
+                    tempPos.x = Integer.parseInt(arg1[0]);
+                    tempPos.y = Integer.parseInt(arg1[1]);
+                    try {
+                        traiterClickDelete();
+                    } catch (IvyException ex) {
+                        Logger.getLogger(TestIvy.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                
+                    timer.cancel();
+                    timer = new Timer();
+                    timer.schedule(new HandleTimerTask(), 6000);
+                    break; 
+                    
  
             }
         });
@@ -215,16 +258,23 @@ public class TestIvy {
                     //Interdit
                     break;
                 case CREATE : 
-                    //On releve la position et on change d'etat
+                    //Interdit
                     break;
                 case CREATE_CLICKED :
-                    //On remplace la position
+                    //Interddit
                     
                     break;
                 case CREATE_VOIX :
-                    //On traite le click.
+                    //On releve le nom de l'element.
                     nomObjetTest = arg1[2];
                     break; 
+                case DELETE :
+                    break;
+                case DELETE_CLICKED : 
+                case DELETE_VOIX : 
+                    nomObjetTest = arg1[2];
+                    break;
+                    
             }
         });
         
@@ -256,11 +306,22 @@ public class TestIvy {
                             break;
                     }
                     break; 
+                case DELETE : 
+                    break;
+                case DELETE_CLICKED:
+                case DELETE_VOIX : 
+                    try {
+                        bus.sendMsg("Palette:SupprimerObjet nom=" + nomObjetTest);
+                    } catch (IvyException ex) {
+                        Logger.getLogger(TestIvy.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    state = State.IDLE;
+                    timer.cancel();
+                    initVars();
             }
         });
         
-        //Je comprends pas pourquoi il ne capte pas ce message.
-        //           'Palette:Info nom=R13 x=459 y=633 longueur=100 hauteur=50 couleurFond=green couleurContour=black'
+       
         bus.bindMsg("^Palette:Info nom=(.*) x=(.*) y=(.*) longueur=(.*) hauteur=(.*) couleurFond=(.*) couleurContour=(.*)", (IvyClient arg0, String[] arg1) -> {
             switch (state){
                 case IDLE :
@@ -290,6 +351,8 @@ public class TestIvy {
                         state = State.CREATE;
                     }
                     break; 
+                default: 
+                    break;
             }
         });
         
@@ -397,6 +460,28 @@ public class TestIvy {
                              break;
                     }
                     break; 
+                case DELETE :
+                    switch (arg1[0]){
+                        case "element" :
+                            commandeReconnu = VoiceRecog.POSITION;
+                            state = State.DELETE_VOIX; 
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case DELETE_CLICKED :
+                    try {
+                        bus.sendMsg("Palette:TesterPoint x=" + tempPos.x + " y=" + tempPos.y);
+                    } catch (IvyException ex) {
+                        Logger.getLogger(TestIvy.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    timer.cancel();
+                    timer = new Timer();
+                    timer.schedule(new HandleTimerTask(), 6000);
+                    break;
+                case DELETE_VOIX : 
+                    break;
             }
         });
         
@@ -432,6 +517,20 @@ public class TestIvy {
                     timer = new Timer();
                     timer.schedule(new HandleTimerTask(), 6000);
                    break;
+               case DELETE :
+                   state = State.IDLE;
+                   timer.cancel();
+                   break;
+               case DELETE_CLICKED :
+                   tempPos = new Point(0,0);
+                   state = State.DELETE;
+                   timer.cancel();
+                   break;
+               case DELETE_VOIX :
+                   state = State.DELETE;
+                   commandeReconnu = VoiceRecog.NOTHING;
+                   timer.cancel();
+               
            }
         }
     }
@@ -496,6 +595,17 @@ public class TestIvy {
             case NOTHING : 
                 break;
                 
+        }
+    }
+    
+    public void traiterClickDelete() throws IvyException{
+        switch (commandeReconnu){
+            case POSITION : 
+                bus.sendMsg("Palette:TesterPoint x=" + tempPos.x + " y=" + tempPos.y);
+                break;
+            case NOTHING :
+            case COLOR : 
+                break;
         }
     }
     
