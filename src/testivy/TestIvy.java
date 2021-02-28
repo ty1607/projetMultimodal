@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 public class TestIvy {
         Ivy bus;
         Stroke stroke;
+        final String FILE = "./test.csv";
         
         private enum State {
             IDLE,
@@ -60,7 +61,7 @@ public class TestIvy {
         
     String nomObjetTest;
     public TestIvy() throws IvyException {
-        bus = new Ivy("Test Ivy", "Palette:CreerRectangle", null);
+        bus = new Ivy("Test Ivy", "", null);
         init();
         try {
             bus.start("127.255.255.255:2010");
@@ -125,7 +126,9 @@ public class TestIvy {
                      stroke.addPoint(Integer.parseInt(arg1[0]), Integer.parseInt(arg1[1]));
                     stroke.normalize();
                     canvas.setNormPoints(stroke.getPoints());
-                   /*Geste reco = canvas.recoGeste(stroke.getPoints());
+                    //sg.addGestetoCSV(new Geste(stroke.getPoints(), "Deplacer"), FILE);
+                    
+                   Geste reco = canvas.recoGeste(stroke.getPoints());
                     switch (reco.getNom()){
                         case "Rectangle" :
                             //Set la forme a creer en tant que rectangle et changer d'etat
@@ -141,7 +144,7 @@ public class TestIvy {
                             break;
                         default :
                             break;
-                    }*/
+                    }
                     break;
 
                 case CREATE : 
@@ -355,7 +358,7 @@ public class TestIvy {
         
         
         
-        bus.sendMsg("Palette:CreerEllipse");
+        //bus.sendMsg("Palette:CreerEllipse");
     }
     
     public class HandleTimerTask extends TimerTask {
@@ -366,6 +369,7 @@ public class TestIvy {
                    break;
                case CREATE :
                    createShape();
+                   state = State.IDLE;
                    break;
 
                case CREATE_CLICKED : 
@@ -399,18 +403,18 @@ public class TestIvy {
         // =================
         // Test Store & Read
         // =================
-        final String FILE = "./test.csv";
+        
         sg = new StoreGeste();
         gestes = new ArrayList<>();
-        List<Point2D.Double> points = new ArrayList<>();
+        /*List<Point2D.Double> points = new ArrayList<>();
         for (int i = 0 ; i < 10 ; i++)
             points.add(new Point2D.Double(i, i));
         
         gestes.add(new Geste(points, "ligne droite"));
         sg.storeWorkflowCSV(gestes, FILE);
-        gestes = sg.readGestesCSV(FILE);
         System.out.println(Arrays.toString(gestes.toArray()));
-        sg.addGestetoCSV(new Geste(points, "ligne droite2"), FILE);
+        sg.addGestetoCSV(new Geste(points, "ligne droite2"), FILE);*/
+        gestes = sg.readGestesCSV(FILE);
     }
     
     /**

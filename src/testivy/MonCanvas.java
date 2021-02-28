@@ -64,14 +64,14 @@ public class MonCanvas extends JComponent implements ActionListener  {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
-        points.forEach(point -> {
+        /*points.forEach(point -> {
             g2.drawOval((int) point.getX(), (int) point.getY(), 2, 2);
         });
         if (normPoint != null){
             normPoint.forEach(point -> {
             g2.drawOval((int) point.getX(), (int) point.getY(), 2, 2);
         });
-        }
+        }*/
     }
     
     public void openFrame() {
@@ -116,7 +116,7 @@ public class MonCanvas extends JComponent implements ActionListener  {
     
     private void addGeste() {
         System.out.println("Geste enregistré");
-        gestes.add(new Geste(this.normPoint,"Geste" + i));
+        //gestes.add(new Geste(this.normPoint,"Geste" + i));
     }
     
     public Geste recoGeste(List<Point2D.Double> points) {
