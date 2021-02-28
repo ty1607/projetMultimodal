@@ -277,8 +277,9 @@ public class TestIvy {
                     //On traite le click.
                     couleur = arg1[5];
                     
-                    if (position != null && (couleur != null && !couleur.isEmpty())){
+                    if (!position.equals(new Point(0,0)) && (couleur != "default")){
                         createShape();
+                        initVars();
                         state = State.IDLE;
                         //timer.cancel();
                     } else {
@@ -341,14 +342,15 @@ public class TestIvy {
                     }
                     break;
                 case CREATE_CLICKED :
-                    //Interdit
+                    
                     switch (arg1[0]) {
                         case "ici" :
                             position = tempPos;
                             //timer.cancel();
                             state = State.CREATE;
-                            if (couleur != null && !couleur.isEmpty()){
+                            if (couleur != "default"){
                                 createShape();
+                                initVars();
                                 state = State.IDLE;
                             } else {
                                 timer.cancel();
@@ -398,9 +400,6 @@ public class TestIvy {
             }
         });
         
-        
-        
-        //bus.sendMsg("Palette:CreerEllipse");
     }
     
     public class HandleTimerTask extends TimerTask {
@@ -411,24 +410,25 @@ public class TestIvy {
                    break;
                case CREATE :
                    createShape();
+                   initVars();
                    state = State.IDLE;
                    break;
 
                case CREATE_CLICKED : 
-                   //On supprime la position releve avec le click
-                   tempPos = new Point(0,0);
-                   //timer.cancel();
-                   state = State.CREATE;
-                   timer.cancel();
+                    //On supprime la position releve avec le click
+                    tempPos = new Point(0,0);
+                    //timer.cancel();
+                    state = State.CREATE;
+                    timer.cancel();
                     timer = new Timer();
                     timer.schedule(new HandleTimerTask(), 6000);
                    break;
                case CREATE_VOIX : 
-                   //On revient dans l'Etat CREATE et on annule la commande reconnu
-                   //timer.cancel();
-                   state = State.CREATE;
-                   commandeReconnu = VoiceRecog.NOTHING;
-                   timer.cancel();
+                    //On revient dans l'Etat CREATE et on annule la commande reconnu
+                    //timer.cancel();
+                    state = State.CREATE;
+                    commandeReconnu = VoiceRecog.NOTHING;
+                    timer.cancel();
                     timer = new Timer();
                     timer.schedule(new HandleTimerTask(), 6000);
                    break;
@@ -441,12 +441,7 @@ public class TestIvy {
      * Intialise les differents variables et elements du code.
      */
     private void init() {
-        state = State.IDLE;
-        commandeReconnu = VoiceRecog.NOTHING;
-        timer = new Timer();
-        //On met la couleur et la position par defaut.
-        position = new Point(0, 0);
-        tempPos = new Point(0, 0);
+        initVars();
         // =================
         // Test Store & Read
         // =================
@@ -475,6 +470,16 @@ public class TestIvy {
             
     }
     
+    
+    public void initVars(){
+        state = State.IDLE;
+        commandeReconnu = VoiceRecog.NOTHING;
+        timer = new Timer();
+        //On met la couleur et la position par defaut.
+        position = new Point(0, 0);
+        tempPos = new Point(0, 0);
+        couleur = "default";
+    }
     public void traiterClick() throws IvyException{
         
         
@@ -500,7 +505,7 @@ public class TestIvy {
             if (position == null){
                 position.setLocation(0, 0);
             }
-            if (couleur == "" || couleur == null){
+            if (couleur == "default" || couleur == null){
                 couleur = "RED";
             }
             
