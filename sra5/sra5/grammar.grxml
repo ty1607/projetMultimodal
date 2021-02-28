@@ -32,19 +32,51 @@
             <ruleref uri="#element"/>
             <tag>out="element";</tag>
         </item>
+        <item>
+          <ruleref uri="#rouge"/>
+          <tag>out="rouge";</tag>
+        </item>
+        <item>
+          <ruleref uri="#vert"/>
+          <tag>out="vert";</tag>
+        </item>
+        <item>
+          <ruleref uri="#bleu"/>
+          <tag>out="bleu";</tag>
+        </item>
+        <item>
+          <ruleref uri="#jaune"/>
+          <tag>out="element";</tag>
+        </item>
+        <item>
+          <ruleref uri="#noir"/>
+          <tag>out="noir";</tag>
+        </item>
+        <item>
+          <ruleref uri="#orange"/>
+          <tag>out="orange";</tag>
+        </item>
+        <item>
+          <ruleref uri="#violet"/>
+          <tag>out="violet";</tag>
+        </item>
+        <item>
+          <ruleref uri="#couleur"/>
+          <tag>out="couleur";</tag>
+        </item>
     </one-of>
   </rule>
        
    <rule id="yes">
     <one-of>
       <item>affirmatif</item>
-      <item>tout à fait</item>
+      <item>tout ï¿½ fait</item>
       <item>oui</item>
     </one-of> 
   </rule> 
   <rule id="no">
     <one-of>
-      <item>négatif</item>
+      <item>nï¿½gatif</item>
       <item>non</item>
       <item>pas question</item>
     </one-of>
@@ -65,6 +97,53 @@
     <one-of>
       <item>element</item>
       <item>ce</item>
+    </one-of>
+  </rule>
+  <rule id="rouge">
+    <one-of>
+      <item>rouge</item>
+      <item>red</item>
+    </one-of>
+  </rule>
+  <rule id="orange">
+    <one-of>
+      <item>orange</item>
+    </one-of>
+  </rule>
+  <rule id="jaune">
+    <one-of>
+      <item>jaune</item>
+      <item>yellow</item>
+    </one-of>
+  </rule>
+  <rule id="vert">
+    <one-of>
+      <item>vert</item>
+      <item>green</item>
+    </one-of>
+  </rule>
+  <rule id="bleu">
+    <one-of>
+      <item>bleu</item>
+      <item>blue</item>
+    </one-of>
+  </rule>
+  <rule id="violet">
+    <one-of>
+      <item>violet</item>
+      <item>mauve</item>
+    </one-of>
+  </rule>
+  <rule id="noir">
+    <one-of>
+      <item>noir</item>
+      <item>black</item>
+    </one-of>
+  </rule>
+  <rule id="couleur">
+    <one-of>
+      <item>coulour</item>
+      <item>color</item>
     </one-of>
   </rule>
 </grammar>
