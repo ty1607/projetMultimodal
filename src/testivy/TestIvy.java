@@ -52,11 +52,13 @@ public class TestIvy {
         
         private Timer timer;
         Point position;
-        Color couleur;
+        Point tempPos;
+        String couleur;
         
         List<Geste> gestes; 
         StoreGeste sg;
         
+    String nomObjetTest;
     public TestIvy() throws IvyException {
         bus = new Ivy("Test Ivy", "Palette:CreerRectangle", null);
         init();
@@ -162,24 +164,117 @@ public class TestIvy {
                     break;
                 case CREATE : 
                     //On releve la position et on change d'etat
-                    position.x = Integer.parseInt(arg1[0]);
-                    position.y = Integer.parseInt(arg1[1]);
+                    timer.cancel();
+                    tempPos.x = Integer.parseInt(arg1[0]);
+                    tempPos.y = Integer.parseInt(arg1[1]);
                     state = State.CREATE_CLICKED;
+                    timer.schedule(new HandleTimerTask(), 6000);
                     break;
                 case CREATE_CLICKED :
                     //On remplace la position
-                    position.x = Integer.parseInt(arg1[0]);
-                    position.y = Integer.parseInt(arg1[1]);
+                    timer.cancel();
+                    tempPos.x = Integer.parseInt(arg1[0]);
+                    tempPos.y = Integer.parseInt(arg1[1]);
+                    timer.schedule(new HandleTimerTask(), 6000);
                     break;
                 case CREATE_VOIX :
                     //On traite le click.
-                    traiterClick();
+                    timer.cancel();
+                    tempPos.x = Integer.parseInt(arg1[0]);
+                    tempPos.y = Integer.parseInt(arg1[1]);
+                
+                    try {
+                        traiterClick();
+                    } catch (IvyException ex) {
+                        Logger.getLogger(TestIvy.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                
                     state = State.CREATE;
+                    timer.schedule(new HandleTimerTask(), 6000);
                     break; 
+ 
             }
         });
         
         
+        bus.bindMsg("^Palette:ResultatTesterPoint x=(.*) y=(.*) nom=(.*)", (IvyClient arg0, String[] arg1) -> {
+            switch (state){
+                case IDLE :
+                    //Interdit
+                    break;
+                case CREATE : 
+                    //On releve la position et on change d'etat
+                    break;
+                case CREATE_CLICKED :
+                    //On remplace la position
+                    
+                    break;
+                case CREATE_VOIX :
+                    //On traite le click.
+                    nomObjetTest = arg1[3];
+                    break; 
+            }
+        });
+        
+        bus.bindMsg("^Palette:FinTesterPoint x=(.*) y=(.*)", (IvyClient arg0, String[] arg1) -> {
+            switch (state){
+                case IDLE :
+                    //Interdit
+                    break;
+                case CREATE : 
+                    //On releve la position et on change d'etat
+                    break;
+                case CREATE_CLICKED :
+                    //On remplace la position
+                    
+                    break;
+                case CREATE_VOIX :
+                    //On traite le click.
+                    switch (commandeReconnu){
+                        case COLOR : 
+                
+                            try {
+                                bus.sendMsg("Palette:DemanderInfo nom=" + nomObjetTest);
+                            } catch (IvyException ex) {
+                                Logger.getLogger(TestIvy.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                
+                        case POSITION :
+                        case NOTHING :
+                            break;
+                    }
+                    break; 
+            }
+        });
+        bus.bindMsg("^Palette:Info nom=(.*) x=(.*) y=(.*) longeur=(.*)"
+                + " hauteur=(.*) couleurFond=(.*) couleurContour=(.*)", (IvyClient arg0, String[] arg1) -> {
+            switch (state){
+                case IDLE :
+                    //Interdit
+                    break;
+                case CREATE : 
+                    //Interdit
+                    break;
+                case CREATE_CLICKED :
+                    //Interdit
+                    
+                    break;
+                case CREATE_VOIX :
+                    //On traite le click.
+                    couleur = arg1[5];
+                    
+                    if (position != null && (couleur != null && !couleur.isEmpty())){
+                        createShape();
+                        state = State.IDLE;
+                        timer.cancel();
+                    } else {
+                        timer.cancel();
+                        timer.schedule(new HandleTimerTask(), 6000);
+                        state = State.CREATE;
+                    }
+                    break; 
+            }
+        });
         
         bus.sendMsg("Palette:CreerEllipse");
     }
@@ -191,22 +286,21 @@ public class TestIvy {
                    //Interdit
                    break;
                case CREATE :
-                   try {
-                       //Creation de la forme reco avec les parametres obtenus ou defaut
-                       bus.sendMsg("Palette:CreerRectangle x=" + position.x + " y=" + position.y + " couleurFond=" + couleur.toString());
-                   } catch (IvyException ex) {
-                       Logger.getLogger(TestIvy.class.getName()).log(Level.SEVERE, null, ex);
-                   }
+                   createShape();
                    break;
 
                case CREATE_CLICKED : 
                    //On supprime la position releve avec le click
-                   position.x = 0; position.y = 0;
+                   tempPos = null;
+                   timer.cancel();
                    state = State.CREATE;
+                   timer.schedule(new HandleTimerTask(), 6000);
                    break;
                case CREATE_VOIX : 
                    //On revient dans l'Etat CREATE et on annule la commande reconnu
+                   timer.cancel();
                    state = State.CREATE;
+                   timer.schedule(new HandleTimerTask(), 6000);
                    break;
            }
         }
@@ -221,7 +315,6 @@ public class TestIvy {
         commandeReconnu = VoiceRecog.NOTHING;
         timer = new Timer();
         //On met la couleur et la position par defaut.
-        couleur = Color.RED;
         position = new Point(0, 0);
         
         // =================
@@ -259,11 +352,34 @@ public class TestIvy {
             
     }
     
-    public void traiterClick(){
+    public void traiterClick() throws IvyException{
         
         
         switch(commandeReconnu){
-            
+            case COLOR:
+                bus.sendMsg("Palette:TesterPoint x=" + tempPos.x + "y=" + tempPos.y);
+                break;
+            case POSITION :
+                position = tempPos;
+                break;
+            case NOTHING : 
+                break;
+                
+        }
+    }
+    
+    public void createShape(){
+        try {
+            //Creation de la forme reco avec les parametres obtenus ou defaut
+            if (position == null){
+                position.setLocation(0, 0);
+            }
+            if (couleur == "" || couleur == null){
+                couleur = Color.RED.toString();
+            }
+            bus.sendMsg("Palette:CreerRectangle x=" + position.x + " y=" + position.y + " couleurFond=" + couleur);
+        } catch (IvyException ex) {
+            Logger.getLogger(TestIvy.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }
